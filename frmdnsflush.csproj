@@ -14,14 +14,23 @@
     <Description>Making it easier for users to change DNS and perform renew/release</Description>
     <!-- Single EXE: requires .NET 8 runtime on target machine -->
     <PublishSingleFile>true</PublishSingleFile>
-    <SelfContained>false</SelfContained>
+    <SelfContained>true</SelfContained>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <PublishReadyToRun>true</PublishReadyToRun>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
   </PropertyGroup>
 
   <ItemGroup>
     <Content Include="bin\Debug\net8.0-windows\dns.ico" />
     <EmbeddedResource Include="Resources\images.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Exclude 4.7.2 subfolder from this project -->
+    <Compile Remove="4.7.2\**" />
+    <EmbeddedResource Remove="4.7.2\**" />
+    <None Remove="4.7.2\**" />
+    <Content Remove="4.7.2\**" />
   </ItemGroup>
 
 </Project>

@@ -12,6 +12,9 @@ obj/
 
 # Publish output
 publish/
+4.7.2/publish/
+4.7.2/bin/
+4.7.2/obj/
 
 # NuGet
 *.nupkg
