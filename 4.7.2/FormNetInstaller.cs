@@ -9,9 +9,9 @@ namespace frmdnsflush
 {
     public partial class FormNetInstaller : Form
     {
-        // Offline installer ~66 MB
+        // Offline installer fwlink (stable Microsoft redirect ~66 MB)
         private const string DownloadUrl =
-            "https://download.microsoft.com/download/F/9/4/F942F07D-F26F-4F30-B4E3-EBD54FABA377/NDP462-KB3151800-x86-x64-AllOS-ENU.exe";
+            "https://go.microsoft.com/fwlink/p/?LinkId=780604";
 
         private string _installerPath;
         private WebClient _webClient;

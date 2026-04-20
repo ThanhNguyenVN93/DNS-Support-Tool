@@ -11,8 +11,9 @@ namespace Bootstrapper
     internal static class Program
     {
         private const int Net462Release = 394802;
+        // Offline installer fwlink (stable Microsoft redirect ~66 MB)
         private const string DownloadUrl =
-            "https://download.microsoft.com/download/F/9/4/F942F07D-F26F-4F30-B4E3-EBD54FABA377/NDP462-KB3151800-x86-x64-AllOS-ENU.exe";
+            "https://go.microsoft.com/fwlink/p/?LinkId=780604";
         private const string MainExe = "DNS Flush and Renew (Release).exe";
 
         [STAThread]
@@ -20,6 +21,9 @@ namespace Bootstrapper
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
+            // Enable TLS 1.2 for Windows 7 / .NET 3.5 (raw value 3072 = Tls12)
+            ServicePointManager.SecurityProtocol = (SecurityProtocolType)(48 | 192 | 768 | 3072);
 
             if (!IsNet462Installed())
             {
