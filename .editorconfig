@@ -1,0 +1,6 @@
+root = true
+
+[*.cs]
+# Suppress WinForms event handler naming convention (control_Event pattern)
+dotnet_naming_rule.winforms_event_handlers.severity = none
+dotnet_diagnostic.IDE1006.severity = none
