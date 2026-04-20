@@ -33,4 +33,9 @@
     <Content Remove="4.7.2\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="4.7.2\FormNetInstaller.cs" />
+    <Compile Include="4.7.2\FormNetInstaller.Designer.cs" />
+  </ItemGroup>
+
 </Project>
