@@ -10,6 +10,8 @@ namespace Bootstrapper
     public class FormInstaller : Form
     {
         public string DownloadUrl { get; set; }
+        /// <summary>If set, skip download and use this local file directly.</summary>
+        public string LocalInstallerPath { get; set; }
         public bool RebootRequired { get; private set; }
 
         private Label lblTitle;
@@ -80,10 +82,38 @@ namespace Bootstrapper
             this.Controls.Add(btnCancel);
         }
 
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+            if (!string.IsNullOrEmpty(LocalInstallerPath))
+            {
+                lblStatus.Text = "Local installer found. Click Install to begin.";
+                lblSize.Text = LocalInstallerPath;
+            }
+        }
+
         private void btnInstall_Click(object sender, EventArgs e)
         {
             btnInstall.Enabled = false;
             btnCancel.Enabled = false;
+
+            // Use local file directly — no download needed
+            if (!string.IsNullOrEmpty(LocalInstallerPath) && File.Exists(LocalInstallerPath))
+            {
+                _installerPath = LocalInstallerPath;
+                lblStatus.Text = "Installing .NET Framework 4.6.2...\r\nPlease wait, do not close this window.";
+                lblSize.Text = "";
+                progressBar.Style = ProgressBarStyle.Marquee;
+                progressBar.MarqueeAnimationSpeed = 30;
+
+                BackgroundWorker worker = new BackgroundWorker();
+                worker.DoWork += DoInstall;
+                worker.RunWorkerCompleted += OnInstallDone;
+                worker.RunWorkerAsync();
+                return;
+            }
+
+            // Fallback: download from URL
             _installerPath = Path.Combine(Path.GetTempPath(), "NDP462-Setup.exe");
             lblStatus.Text = "Downloading .NET Framework 4.6.2...\r\nThis may take a few minutes (~66 MB).";
 

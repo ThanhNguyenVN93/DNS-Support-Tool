@@ -12,4 +12,12 @@
     <Company>ThanhCode93</Company>
   </PropertyGroup>
 
+  <ItemGroup>
+    <!-- Bundle offline .NET 4.6.2 installer alongside the launcher -->
+    <Content Include="ndp462-kb3151800-x86-x64-allos-enu.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

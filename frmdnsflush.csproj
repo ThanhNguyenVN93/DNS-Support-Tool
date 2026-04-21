@@ -38,4 +38,8 @@
     <Compile Include="4.7.2\FormNetInstaller.Designer.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="Bootstrapper\Bootstrapper.csproj" />
+  </ItemGroup>
+
 </Project>

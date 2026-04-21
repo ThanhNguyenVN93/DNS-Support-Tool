@@ -11,9 +11,9 @@ namespace Bootstrapper
     internal static class Program
     {
         private const int Net462Release = 394802;
-        // Offline installer fwlink (stable Microsoft redirect ~66 MB)
-        private const string DownloadUrl =
-            "https://go.microsoft.com/fwlink/p/?LinkId=780604";
+        private const string InstallerFileName = "ndp462-kb3151800-x86-x64-allos-enu.exe";
+        // Fallback download (fwlink) if local file not found
+        private const string DownloadUrl = "https://go.microsoft.com/fwlink/p/?LinkId=780604";
         private const string MainExe = "DNS Flush and Renew (Release).exe";
 
         [STAThread]
@@ -27,13 +27,20 @@ namespace Bootstrapper
 
             if (!IsNet462Installed())
             {
+                string dir0 = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                string localInstaller = Path.Combine(dir0, InstallerFileName);
+
                 using (FormInstaller frm = new FormInstaller())
                 {
-                    frm.DownloadUrl = DownloadUrl;
+                    // Use local bundled file if available, else download
+                    if (File.Exists(localInstaller))
+                        frm.LocalInstallerPath = localInstaller;
+                    else
+                        frm.DownloadUrl = DownloadUrl;
+
                     if (frm.ShowDialog() != DialogResult.OK)
                         return;
 
-                    // Reboot required
                     if (frm.RebootRequired)
                     {
                         MessageBox.Show(
