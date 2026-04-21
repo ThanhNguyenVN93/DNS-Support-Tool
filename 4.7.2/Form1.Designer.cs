@@ -115,13 +115,12 @@ namespace frmdnsflush
             this.ClientSize = new System.Drawing.Size(371, 180);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximumSize = new System.Drawing.Size(387, 219);
-            this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(387, 219);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Form1";
+            this.MaximumSize = new System.Drawing.Size(387, 219);
+            this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(387, 219);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();

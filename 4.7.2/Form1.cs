@@ -19,6 +19,9 @@ namespace frmdnsflush
         private void Form1_Load(object sender, EventArgs e)
         {
             timer1.Start();
+            // Load icon from embedded resource
+            var icoStream = typeof(Form1).Assembly.GetManifestResourceStream("frmdnsflush.dns.ico");
+            if (icoStream != null) this.Icon = new System.Drawing.Icon(icoStream);
             // Load Ko-fi button image from embedded resource
             var imgStream = typeof(Form1).Assembly.GetManifestResourceStream("frmdnsflush.Resources.images.png");
             if (imgStream != null) pictureBox1.Image = System.Drawing.Image.FromStream(imgStream);
