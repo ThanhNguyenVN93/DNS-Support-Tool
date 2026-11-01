@@ -8,6 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AssemblyName>DNS Flush and Renew (Release)</AssemblyName>
+    <Version>1.1.0</Version>
     <ApplicationIcon>4.7.2\dns.ico</ApplicationIcon>
     <Title>DNS Flush and Renew (Release)</Title>
     <Company>ThanhCode93</Company>
