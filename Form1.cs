@@ -14,8 +14,10 @@ namespace frmdnsflush
         {
             timer1.Start();
             // Load Ko-fi button image from embedded resource
-            var imgStream = typeof(Form1).Assembly.GetManifestResourceStream("frmdnsflush.Resources.images.png");
-            if (imgStream != null) pictureBox1.Image = Image.FromStream(imgStream);
+            using (var imgStream = typeof(Form1).Assembly.GetManifestResourceStream("frmdnsflush.Resources.images.png"))
+            {
+                if (imgStream != null) pictureBox1.Image = Image.FromStream(imgStream);
+            }
             // Detect Windows version
             lblos.Text = $"OS: {GetWindowsVersion()}";
         }
@@ -102,7 +104,7 @@ namespace frmdnsflush
 
             try
             {
-                string iface = GetActiveNetworkInterface();
+                string iface = await Task.Run(GetActiveNetworkInterface);
                 if (string.IsNullOrEmpty(iface))
                 {
                     AppendOutput("Warning: No active network interface found.");
@@ -111,8 +113,11 @@ namespace frmdnsflush
                 }
 
                 AppendOutput($"Interface: {iface}");
-                AppendOutput(await ExecuteCommandAsync("netsh", $"interface ip set dns name=\"{iface}\" static 1.1.1.1"));
-                AppendOutput(await ExecuteCommandAsync("netsh", $"interface ip add dns name=\"{iface}\" 8.8.8.8 index=2"));
+                // Windows adapter names can't contain '"' themselves, but escape defensively
+                // anyway since this value is spliced into a single command-line string.
+                string escapedIface = iface.Replace("\"", "\\\"");
+                AppendOutput(await ExecuteCommandAsync("netsh", $"interface ip set dns name=\"{escapedIface}\" static 1.1.1.1"));
+                AppendOutput(await ExecuteCommandAsync("netsh", $"interface ip add dns name=\"{escapedIface}\" 8.8.8.8 index=2"));
                 AppendOutput(await ExecuteCommandAsync("ipconfig", "/flushdns"));
                 AppendOutput("DNS changed successfully: Primary 1.1.1.1 | Secondary 8.8.8.8");
                 await PingCheckAsync();
@@ -175,12 +180,13 @@ namespace frmdnsflush
 
             foreach (var line in output.Split('\n'))
             {
-                if (line.Contains("Connected"))
-                {
-                    var parts = line.Trim().Split(SpaceSeparator, StringSplitOptions.RemoveEmptyEntries);
-                    if (parts.Length >= 4)
-                        return string.Join(" ", parts[3..]);
-                }
+                var parts = line.Trim().Split(SpaceSeparator, StringSplitOptions.RemoveEmptyEntries);
+                // Columns: Admin State | State | Type | Interface Name.
+                // Match the State column EXACTLY as "Connected" — a substring check here
+                // (e.g. line.Contains("Connected")) also matches "Disconnected", since that
+                // string contains "Connected" too, and can pick a down adapter instead.
+                if (parts.Length >= 4 && parts[1] == "Connected")
+                    return string.Join(" ", parts[3..]);
             }
 
             return string.Empty;
@@ -204,8 +210,15 @@ namespace frmdnsflush
                 };
 
                 process.Start();
-                string output = process.StandardOutput.ReadToEnd();
-                string error = process.StandardError.ReadToEnd();
+
+                // Read both streams concurrently, not sequentially: if a command ever writes
+                // enough to stderr to fill the OS pipe buffer while we're still blocked
+                // reading stdout to completion, the child stalls waiting for someone to drain
+                // stderr and this would deadlock.
+                Task<string> outputTask = process.StandardOutput.ReadToEndAsync();
+                Task<string> errorTask = process.StandardError.ReadToEndAsync();
+                string output = outputTask.GetAwaiter().GetResult();
+                string error = errorTask.GetAwaiter().GetResult();
                 process.WaitForExit();
 
                 return string.IsNullOrWhiteSpace(error) ? output.Trim() : error.Trim();

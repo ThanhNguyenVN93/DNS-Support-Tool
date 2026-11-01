@@ -8,7 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AssemblyName>DNS Flush and Renew (Release)</AssemblyName>
-    <ApplicationIcon>bin\Debug\net8.0-windows\dns.ico</ApplicationIcon>
+    <ApplicationIcon>4.7.2\dns.ico</ApplicationIcon>
     <Title>DNS Flush and Renew (Release)</Title>
     <Company>ThanhCode93</Company>
     <Description>Making it easier for users to change DNS and perform renew/release</Description>
@@ -21,24 +21,31 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="bin\Debug\net8.0-windows\dns.ico" />
     <EmbeddedResource Include="Resources\images.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Exclude 4.7.2 subfolder from this project -->
+    <!-- Exclude the 4.7.2 and Bootstrapper subprojects from this project's own glob.
+         Without this, if either subfolder was ever built on its own (leaving behind its
+         own obj\**\*.AssemblyInfo.cs), the implicit **/*.cs glob here picks that generated
+         file up too and the build fails with CS0579 "Duplicate attribute" (AssemblyCompany,
+         AssemblyVersion, etc. defined twice across the compilation). -->
     <Compile Remove="4.7.2\**" />
     <EmbeddedResource Remove="4.7.2\**" />
     <None Remove="4.7.2\**" />
     <Content Remove="4.7.2\**" />
+
+    <Compile Remove="Bootstrapper\**" />
+    <EmbeddedResource Remove="Bootstrapper\**" />
+    <None Remove="Bootstrapper\**" />
+    <Content Remove="Bootstrapper\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="4.7.2\FormNetInstaller.cs" />
-    <Compile Include="4.7.2\FormNetInstaller.Designer.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <!-- Not referenced anywhere in this build: FormNetInstaller downloads/installs the
+         .NET Framework 4.6.2 runtime, which is irrelevant to this target — it's
+         SelfContained, so it doesn't need any .NET runtime preinstalled at all. It belongs
+         only to the 4.7.2\ (net462) variant, which already compiles it via its own csproj. -->
     <None Include="Bootstrapper\Bootstrapper.csproj" />
   </ItemGroup>
 
